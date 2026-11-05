@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Traditional Stall POS DEMO</title>
+<style>
+body{font-family:Arial;margin:0;background:#eee}
+header{background:#1b5e20;color:#fff;padding:15px}
+h1{margin:0;font-size:22px}button{padding:10px;margin:5px;font-size:16px}
+.item{background:#fff;margin:8px;padding:10px;display:flex;justify-content:space-between}
+.cat{background:#1b5e20;color:#fff;padding:8px;margin:10px 8px 0}
+.barcode{font-family:monospace;letter-spacing:3px}
+@media print{button,.no-print{display:none}}
+</style></head>
+<body>
+<header class="no-print"><h1>TRADITIONAL STALL - POS DEMO</h1>
+<p>Shop name: EDIT LATER | Tap EDIT to change name / qty / price</p>
+<button onclick="window.print()">🖨️ PRINT BARCODE STICKERS</button>
+<button onclick="addItem()">+ ADD ITEM</button></header>
+<div id="list"></div>
+<script>
+let items=[
+["001","Bangles","JEWELLERY",12],["002","Earrings","JEWELLERY",20],
+["003","Necklace","JEWELLERY",15],["004","Rings","JEWELLERY",18],
+["005","Beads","JEWELLERY",25],["006","Watches","WATCH / GLASSES",8],
+["007","Sunglasses","WATCH / GLASSES",10],["008","Glasses","WATCH / GLASSES",10],
+["009","Cloth Red","SANGOMA",6],["010","Cloth White","SANGOMA",6],
+["011","Cloth Black","SANGOMA",6],["012","Sangoma Beads","SANGOMA",14],
+["013","Muti Small Bottle","SANGOMA",9],["014","Muti Bottle","SANGOMA",7],
+["015","Muti Powder","SANGOMA",11],["016","Thread","SEWING",30],
+["017","Needle","SEWING",30],["018","Malapi","SEWING",20],
+["019","Clothes","CLOTHES / SHOES",12],["020","Shoes","CLOTHES / SHOES",9],
+["021","Traditional Dress","CLOTHES / SHOES",5],["022","Hubbly Pipe","HUBBLY",4],
+["023","Flavour Apple","HUBBLY",15],["024","Flavour Grape","HUBBLY",15],
+["025","Flavour Mint","HUBBLY",15],["026","Hubbly Coal","HUBBLY",20],
+["027","Bag","OTHER",8],["028","Hat","OTHER",7],
+["029","Belt","OTHER",9],["030","Perfume","OTHER",6]];
+let cats=[...new Set(items.map(i=>i[2]))];
+function show(){
+let h="";cats.forEach(c=>{
+h+=`<div class="cat">${c}</div>`;
+items.filter(i=>i[2]==c).forEach(i=>{
+h+=`<div class="item"><div><b>${i[0]} ${i[1]}</b><br><span class="barcode">||||| ${i[0]} |||||</span></div>
+<div>Qty: <b>${i[3]}</b> <button onclick="sell('${i[0]}')">SELL</button>
+<button onclick="editItem('${i[0]}')">EDIT</button></div></div>`})});
+document.getElementById("list").innerHTML=h}
+function sell(code){let it=items.find(i=>i[0]==code);if(it[3]>0)it[3]--;show()}
+function editItem(code){let it=items.find(i=>i[0]==code);
+let n=prompt("Name:",it[1]);if(n)it[1]=n;
+let q=prompt("Qty:",it[3]);if(q!==null)it[3]=Number(q);show()}
+function addItem(){let n=prompt("New item name:");if(n)items.push([String(items.length+1).padStart(3,"0"),n,"OTHER",0]);show()}
+show();
+</script></body></html>
