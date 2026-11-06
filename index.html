@@ -5,62 +5,69 @@
 <style>
 *{box-sizing:border-box}body{font-family:Arial;margin:0;background:#f2f2f2}
 .top{background:#222;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;font-size:14px}
-.top b{font-size:17px}.wrap{display:flex;gap:12px;padding:12px}
-.left{flex:1.4}.right{flex:1;background:#fff;border-radius:14px;padding:14px;height:fit-content;position:sticky;top:10px}
-h3{margin:6px 0}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.top b{font-size:17px}
+.cats{background:#fff;padding:10px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:0;z-index:9}
+.cat{white-space:nowrap;border:2px solid #222;border-radius:30px;padding:11px 16px;font-weight:bold;background:#fff;width:auto;margin:0}
+.cat.on{background:#222;color:#fff}
+.wrap{display:flex;gap:12px;padding:12px}
+.left{flex:1.4}.right{flex:1;background:#fff;border-radius:14px;padding:14px;height:fit-content;position:sticky;top:70px}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .tile{border:none;border-radius:14px;padding:16px 8px;color:#fff;font-size:16px;font-weight:bold}
-.tile small{display:block;font-weight:normal;margin-top:4px}
-.scan{background:#fff;border-radius:14px;padding:12px;margin-top:12px}
-.scan input{width:100%;padding:12px;font-size:16px;border:2px solid #222;border-radius:8px}
-.stock{background:#fff;border-radius:14px;padding:12px;margin-top:12px;font-size:14px}
-.sale{font-size:16px;line-height:1.9}.total{background:#111;color:#fff;border-radius:12px;padding:14px;font-size:24px;font-weight:bold;margin:10px 0}
+.tile small{display:block;font-weight:normal}
+.sale{line-height:1.9}.total{background:#111;color:#fff;border-radius:12px;padding:14px;font-size:24px;font-weight:bold;margin:10px 0}
 button{border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:bold;width:100%;margin-top:8px}
 .charge{background:#2E9E44;color:#fff}.hold{background:#ccc}
-.pay{text-align:center;color:#555;font-size:13px}
-@media(max-width:700px){.wrap{flex-direction:column}.grid{grid-template-columns:1fr 1fr 1fr}}
+.scan input{width:100%;padding:12px;font-size:16px;border:2px solid #222;border-radius:8px;margin-top:8px}
+@media(max-width:700px){.wrap{flex-direction:column}.right{position:static}}
 </style></head>
 <body>
-<div class="top"><div>🟢 <b>Traditional Stall POS — Mall Kiosk</b><br>Staff: Andile • Logged in • 14:32 • 09 Oct 2024</div>
-<div>Staff: Andile • Logged in<br>14:32 • 09 Oct 2024</div></div>
+<div class="top"><div>🟢 <b>Traditional Stall POS — Mall Kiosk</b><br>Staff: Andile • 14:32 • 09 Oct 2024</div><div>Staff: Andile<br>Logged in</div></div>
+
+<div class="cats" id="cats"></div>
+
 <div class="wrap"><div class="left">
-<h3>CATEGORIES</h3><div class="grid" id="cats"></div>
-<div class="scan"><b>Barcode Scanning</b><br><br>
-<button style="background:#222;color:#fff;width:auto">[ Scan Barcode ]</button>
-<input id="bar" placeholder="Scan item... | Ready to scan  📷" onkeydown="if(event.key==='Enter')scanBar()"></div>
-<div class="stock"><b>Stock</b><br><span id="stock"></span></div>
+<h3 id="title">⭐ MOST SELLING ITEMS</h3>
+<div class="grid" id="grid"></div>
+<div style="background:#fff;border-radius:14px;padding:12px;margin-top:12px"><b>Barcode Scanning</b>
+<input id="bar" placeholder="Scan item... | Ready to scan 📷" onkeydown="if(event.key==='Enter')scanBar()"></div>
 </div>
-<div class="right"><h3>CURRENT SALE &nbsp; —</h3><div class="sale" id="sale">No items yet.<br>Tap a category 👆</div>
-<hr>Subtotal: <b style="float:right" id="sub">R0.00</b><br>
-Discount: <b style="float:right">-R0.00</b><br>VAT (15%): <b style="float:right" id="vat">R0.00</b>
+
+<div class="right"><h3>CURRENT SALE — RECEIPT 🧾</h3><div class="sale" id="sale">No items yet.<br>Tap category on TOP 👆 then tap item 👆</div>
+<hr>Subtotal: <b style="float:right" id="sub">R0.00</b><br>Discount: <b style="float:right">-R0.00</b><br>VAT (15%): <b style="float:right" id="vat">R0.00</b>
 <div class="total">TOTAL:<br><span id="tot">R0.00 ZAR</span></div>
 <button class="charge" onclick="alert('CHARGE - Card / Cash / Tap')">Charge &nbsp; F12</button>
 <button class="hold" onclick="alert('Sale HELD')">Hold Sale</button>
-<p class="pay">Payment: Card / Cash / Mobile Tap</p>
+<p style="text-align:center;color:#555;font-size:13px">Payment: Card / Cash / Mobile Tap</p>
 <button style="background:#FFC107" onclick="clearSale()">Clear Sale</button>
 </div></div>
+
 <script>
+let cats=["⭐ Most Selling","Clothes","Bangles","Watches","Traditional Shirts","Traditional Outfits","Traditional Tools","Sewing","Hubbly"];
 let items=[
-["001","Bangles",25,42,"#E8912D","🧿"],["002","Earrings",35,20,"#E8912D","💍"],
-["003","Necklace",80,15,"#E8912D","📿"],["006","Watches",180,8,"#2F5D7C","⌚"],
-["007","Sunglasses",120,28,"#2F5D7C","🕶️"],["008","Glasses",150,10,"#2F5D7C","👓"],
-["019","Clothes",150,12,"#2E86D1","👕"],["021","Trad Dress",220,5,"#2E86D1","👗"],
-["020","Shoes",350,9,"#2E9E44","👟"],["009","Sangoma Cloth",220,15,"#C85A2A","🧿"],
-["012","Sangoma Beads",60,14,"#C85A2A","📿"],["022","Hubbly Pipe",280,4,"#7A4FA3","💨"],
-["023","Flavour Apple",45,15,"#7A4FA3","🍎"],["016","Thread",20,30,"#888","🧵"],
-["027","Bag",120,8,"#555","👜"],["030","Perfume",95,6,"#555","🌸"]];
-let sale=[];
-function showCats(){document.getElementById("cats").innerHTML=items.map(i=>
-`<button class="tile" style="background:${i[4]}" onclick="add('${i[0]}')">${i[5]}<br>${i[1]}<small>from R${i[2]}</small></button>`).join("");
-document.getElementById("stock").innerHTML=items.slice(0,3).map(i=>`${i[1]} &nbsp; ${i[3]} in stock ${i[3]<11?'• <span style="color:red">Low stock / Restock soon</span>':''}`).join("<br>")}
-function add(c){let it=items.find(i=>i[0]==c);let s=sale.find(i=>i[0]==c);
-if(s)s.qty++;else sale.push({code:c,name:it[1],price:it[2],qty:1});render()}
-function scanBar(){let v=document.getElementById("bar").value.trim();if(items.find(i=>i[0]==v))add(v);else alert("Not found: "+v);document.getElementById("bar").value=""}
-function render(){let sub=0;let h=sale.map(s=>{sub+=s.price*s.qty;
-return `• ${s.name} x${s.qty} <b style="float:right">R${(s.price*s.qty).toFixed(2)}</b>`}).join("<br>");
+["001","Bangles",25,42,"Bangles","#E8912D","🧿",1],["002","Earrings",35,20,"Bangles","#E8912D","💍",1],
+["003","Necklace",80,15,"Bangles","#E8912D","📿",0],["006","Watches",180,8,"Watches","#2F5D7C","⌚",1],
+["007","Sunglasses",120,28,"Watches","#2F5D7C","🕶️",1],["008","Glasses",150,10,"Watches","#2F5D7C","👓",0],
+["019","T-Shirt",150,12,"Clothes","#2E86D1","👕",1],["020","Shoes",350,9,"Clothes","#2E86D1","👟",1],
+["021","Trad. Dress",220,5,"Traditional Outfits","#2E86D1","👗",1],["009","Sangoma Cloth",220,15,"Traditional Outfits","#C85A2A","🧿",1],
+["010","Cloth White",180,6,"Traditional Shirts","#C85A2A","🤍",0],["011","Cloth Black",180,6,"Traditional Shirts","#C85A2A","🖤",0],
+["013","Muti Small",60,9,"Traditional Tools","#7A4FA3","🧪",1],["014","Muti Bottle",90,7,"Traditional Tools","#7A4FA3","🧪",0],
+["015","Muti Powder",70,11,"Traditional Tools","#7A4FA3","🌿",0],["012","Sangoma Beads",60,14,"Traditional Tools","#7A4FA3","📿",1],
+["016","Thread",20,30,"Sewing","#888","🧵",0],["017","Needle",15,30,"Sewing","#888","🪡",0],
+["022","Hubbly Pipe",280,4,"Hubbly","#555","💨",1],["023","Flavour Apple",45,15,"Hubbly","#555","🍎",1],
+["024","Flavour Grape",45,15,"Hubbly","#555","🍇",0],["030","Perfume",95,6,"Clothes","#555","🌸",0]];
+let cur="⭐ Most Selling", sale=[];
+function showCats(){document.getElementById("cats").innerHTML=cats.map(c=>`<button class="cat ${c==cur?'on':''}" onclick="setCat('${c}')">${c}</button>`).join("")}
+function setCat(c){cur=c;showCats();showItems()}
+function showItems(){document.getElementById("title").innerHTML=cur.toUpperCase();
+let list=cur=="⭐ Most Selling"?items.filter(i=>i[7]==1):items.filter(i=>i[4]==cur);
+document.getElementById("grid").innerHTML=list.map(i=>`<button class="tile" style="background:${i[5]}" onclick="add('${i[0]}')">${i[6]}<br>${i[1]}<small>from R${i[2]} • ${i[3]} in stock</small></button>`).join("")||"<p>No items in this category yet.</p>"}
+function add(c){let it=items.find(i=>i[0]==c);let s=sale.find(i=>i[0]==c);if(s)s.qty++;else sale.push({code:c,name:it[1],price:it[2],qty:1});render()}
+function scanBar(){let v=document.getElementById("bar").value.trim();if(items.find(i=>i[0]==v))add(v);document.getElementById("bar").value=""}
+function render(){let sub=0;let h=sale.map(s=>{sub+=s.price*s.qty;return `• ${s.name} x${s.qty} <b style="float:right">R${(s.price*s.qty).toFixed(2)}</b>`}).join("<br>");
 document.getElementById("sale").innerHTML=sale.length?h:"No items yet.";
 let vat=sub*0.15;document.getElementById("sub").textContent="R"+sub.toFixed(2);
 document.getElementById("vat").textContent="R"+vat.toFixed(2);
 document.getElementById("tot").textContent="R"+(sub+vat).toFixed(2)+" ZAR"}
 function clearSale(){sale=[];render()}
-showCats();render();
+showCats();showItems();render();
 </script></body></html>
