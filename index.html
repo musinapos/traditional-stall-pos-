@@ -4,16 +4,20 @@
 <title>Traditional Stall</title>
 <style>
 *{box-sizing:border-box}body{font-family:Arial;margin:0;background:#f2f2f2}
-#login{position:fixed;inset:0;background:linear-gradient(160deg,#111,#3a2a00);color:#fff;display:flex;align-items:center;justify-content:center;z-index:99}
-.box{text-align:center;width:320px}
-.logo{width:90px;height:90px;border:2px solid #d4af37;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:42px}
-.box h1{letter-spacing:5px;font-size:26px;margin:14px 0 2px}
-.box p{color:#d4af37;letter-spacing:2px;font-size:12px;margin:0 0 20px}
-.dots{font-size:32px;letter-spacing:12px;height:40px}
-.msg{color:#ff8a80;height:20px;font-size:14px}
-.pad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
-.pad button{background:#222;color:#fff;border:1px solid #555;border-radius:50%;width:78px;height:78px;font-size:24px;margin:0 auto}
-.pad button:active{background:#d4af37;color:#000}
+#login{position:fixed;inset:0;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;z-index:99;padding:10px}
+.box{text-align:center;width:340px}
+.logo{width:80px;height:80px;border:3px solid #d4af37;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:40px;color:#d4af37}
+.box h1{letter-spacing:4px;font-size:24px;margin:12px 0 2px}
+.box p{color:#d4af37;letter-spacing:2px;font-size:12px;margin:0 0 14px}
+/* BANK BAR */
+.barbox{background:#fff;color:#000;border-radius:12px;padding:16px;font-size:32px;letter-spacing:16px;font-weight:bold;height:64px}
+.bar{height:8px;background:#333;border-radius:10px;margin:12px 0 4px;overflow:hidden}
+.fill{height:100%;width:0%;background:#d4af37;transition:width .2s}
+.count{color:#fff;font-size:17px;font-weight:bold;height:24px}
+.msg{color:#ff8a80;height:22px;font-size:15px;font-weight:bold}
+.pad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px}
+.pad button{background:#333;color:#fff;border:2px solid #d4af37;border-radius:50%;width:88px;height:88px;font-size:30px;margin:0 auto}
+.pad button:active{background:#d4af37;color:#000;transform:scale(.95)}
 .top{background:#111;color:#fff;padding:14px;text-align:center;border-bottom:3px solid #d4af37}
 .top h1{margin:0;letter-spacing:6px;font-size:22px}
 .top h1 span{color:#d4af37}
@@ -30,6 +34,11 @@
 button{border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:bold;width:100%;margin-top:8px}
 .charge{background:#2E9E44;color:#fff}.hold{background:#ccc}
 .scan input{width:100%;padding:12px;font-size:16px;border:2px solid #222;border-radius:8px;margin-top:8px}
+#receipt{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:98}
+.paper{background:#fff;width:320px;padding:18px;text-align:center;font-family:monospace}
+.paper h2{letter-spacing:3px;margin:0}
+.paper hr{border-top:2px dashed #000}
+.paper .row{display:flex;justify-content:space-between;text-align:left}
 @media(max-width:700px){.wrap{flex-direction:column}.right{position:static}}
 </style></head>
 <body>
@@ -37,16 +46,19 @@ button{border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:bo
 <div class="logo">✦</div>
 <h1>TRADITIONAL <span style="color:#d4af37">STALL</span></h1>
 <p>JEWELLERY • SANGOMA • FASHION</p>
-<div class="dots" id="dots">○ ○ ○ ○</div>
+
+<div class="barbox" id="barbox">_ _ _ _</div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+<div class="count" id="count">Tap 0 four times 👇</div>
 <div class="msg" id="msg"></div>
-<p style="color:#ccc;font-size:14px;letter-spacing:1px">Enter your password</p>
+<p style="color:#fff;font-size:16px">Enter your password</p>
 <div class="pad">
 <button onclick="press(1)">1</button><button onclick="press(2)">2</button><button onclick="press(3)">3</button>
 <button onclick="press(4)">4</button><button onclick="press(5)">5</button><button onclick="press(6)">6</button>
 <button onclick="press(7)">7</button><button onclick="press(8)">8</button><button onclick="press(9)">9</button>
 <button onclick="clr()">C</button><button onclick="press(0)">0</button><button onclick="del()">⌫</button>
 </div>
-<p style="color:#888;font-size:12px;margin-top:16px">Testing password: 0000</p>
+<p style="color:#d4af37;font-size:15px;margin-top:12px">TESTING: 0 0 0 0</p>
 </div></div>
 
 <div class="top"><h1>TRADITIONAL <span>STALL</span></h1><small>PREMIUM &nbsp;•&nbsp; STAFF: ANDILE &nbsp;•&nbsp; 14:32</small></div>
@@ -60,21 +72,26 @@ button{border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:bo
 <div class="right"><h3>CURRENT SALE — RECEIPT 🧾</h3><div class="sale" id="sale">No items yet.<br>Tap category on TOP 👆 then tap item 👆</div>
 <hr>Subtotal: <b style="float:right" id="sub">R0.00</b><br>Discount: <b style="float:right">-R0.00</b><br>VAT (15%): <b style="float:right" id="vat">R0.00</b>
 <div class="total">TOTAL:<br><span id="tot">R0.00 ZAR</span></div>
-<button class="charge" onclick="alert('CHARGE - Card / Cash / Tap')">Charge &nbsp; F12</button>
+<button class="charge" onclick="showReceipt()">Charge &nbsp; F12</button>
 <button class="hold" onclick="alert('Sale HELD')">Hold Sale</button>
 <p style="text-align:center;color:#555;font-size:13px">Payment: Card / Cash / Mobile Tap</p>
 <button style="background:#FFC107" onclick="clearSale()">Clear Sale</button>
 </div></div>
+<div id="receipt"><div class="paper" id="paper"></div></div>
 
 <script>
 let pin="";
 function press(n){if(pin.length>=4)return;pin+=n;draw();
+document.getElementById("count").textContent=pin.length+" / 4 entered - You pressed "+n;
 if(pin.length==4){if(pin=="0000"){document.getElementById("login").style.display="none"}
-else{document.getElementById("msg").textContent="Wrong password. Try again.";pin="";setTimeout(draw,300)}}}
-function draw(){let d="";for(let i=0;i<4;i++)d+=i<pin.length?"● ":"○ ";document.getElementById("dots").textContent=d}
+else{document.getElementById("msg").textContent="Wrong password. Try again.";pin="";setTimeout(draw,400)}}}
+function draw(){
+let s="";for(let i=0;i<4;i++)s+=i<pin.length?"* ":"_ ";
+document.getElementById("barbox").textContent=s;
+document.getElementById("fill").style.width=(pin.length*25)+"%";
+if(!pin.length)document.getElementById("count").textContent="Tap 0 four times 👇"}
 function clr(){pin="";document.getElementById("msg").textContent="";draw()}
 function del(){pin=pin.slice(0,-1);draw()}
-
 let cats=["⭐ Most Selling","Clothes","Bangles","Watches","Traditional Shirts","Traditional Outfits","Traditional Tools","Sewing","Hubbly"];
 let items=[
 ["001","Bangles",25,42,"Bangles","#E8912D","🧿",1],["002","Earrings",35,20,"Bangles","#E8912D","💍",1],
@@ -93,7 +110,7 @@ function showCats(){document.getElementById("cats").innerHTML=cats.map(c=>`<butt
 function setCat(c){cur=c;showCats();showItems()}
 function showItems(){document.getElementById("title").innerHTML=cur.toUpperCase();
 let list=cur=="⭐ Most Selling"?items.filter(i=>i[7]==1):items.filter(i=>i[4]==cur);
-document.getElementById("grid").innerHTML=list.map(i=>`<button class="tile" style="background:${i[5]}" onclick="add('${i[0]}')">${i[6]}<br>${i[1]}<small>from R${i[2]} • ${i[3]} in stock</small></button>`).join("")||"<p>No items in this category yet.</p>"}
+document.getElementById("grid").innerHTML=list.map(i=>`<button class="tile" style="background:${i[5]}" onclick="add('${i[0]}')">${i[6]}<br>${i[1]}<small>from R${i[2]} • ${i[3]} in stock</small></button>`).join("")}
 function add(c){let it=items.find(i=>i[0]==c);let s=sale.find(i=>i[0]==c);if(s)s.qty++;else sale.push({code:c,name:it[1],price:it[2],qty:1});render()}
 function scanBar(){let v=document.getElementById("bar").value.trim();if(items.find(i=>i[0]==v))add(v);document.getElementById("bar").value=""}
 function render(){let sub=0;let h=sale.map(s=>{sub+=s.price*s.qty;return `• ${s.name} x${s.qty} <b style="float:right">R${(s.price*s.qty).toFixed(2)}</b>`}).join("<br>");
@@ -102,5 +119,12 @@ let vat=sub*0.15;document.getElementById("sub").textContent="R"+sub.toFixed(2);
 document.getElementById("vat").textContent="R"+vat.toFixed(2);
 document.getElementById("tot").textContent="R"+(sub+vat).toFixed(2)+" ZAR"}
 function clearSale(){sale=[];render()}
+function showReceipt(){
+if(!sale.length){alert("No items yet. Tap an item first.");return}
+let sub=0;sale.forEach(s=>sub+=s.price*s.qty);let vat=sub*0.15,tot=sub+vat;
+let rows=sale.map(s=>`<div class="row"><span>${s.name} x${s.qty}</span><span>R${(s.price*s.qty).toFixed(2)}</span></div>`).join("");
+document.getElementById("paper").innerHTML=`<h2>TRADITIONAL STALL</h2>Jewellery • Sangoma • Fashion<br>Mall Kiosk • Pretoria<hr>Receipt No: R${Math.floor(1000+Math.random()*9000)}<br>Date: ${new Date().toLocaleString()}<br>Staff: Andile<hr>${rows}<hr><div class="row"><span>Subtotal:</span><span>R${sub.toFixed(2)}</span></div><div class="row"><span>VAT (15%):</span><span>R${vat.toFixed(2)}</span></div><div class="row"><b>TOTAL:</b><b>R${tot.toFixed(2)} ZAR</b></div><hr><b>THANK YOU FOR BUYING HERE!</b><br>Thank you for supporting local business!<br><br><small>Designed by System Systems</small><br><br><button onclick="window.print()" style="background:#111;color:#fff">🖨️ PRINT RECEIPT</button><button onclick="closeReceipt()" style="background:#ccc">Close / New Sale</button>`;
+document.getElementById("receipt").style.display="flex"}
+function closeReceipt(){document.getElementById("receipt").style.display="none";clearSale()}
 showCats();showItems();render();
 </script></body></html>
