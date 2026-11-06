@@ -1,52 +1,66 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Traditional Stall POS DEMO</title>
+<title>Traditional Stall POS - Mall Kiosk</title>
 <style>
-body{font-family:Arial;margin:0;background:#eee}
-header{background:#1b5e20;color:#fff;padding:15px}
-h1{margin:0;font-size:22px}button{padding:10px;margin:5px;font-size:16px}
-.item{background:#fff;margin:8px;padding:10px;display:flex;justify-content:space-between}
-.cat{background:#1b5e20;color:#fff;padding:8px;margin:10px 8px 0}
-.barcode{font-family:monospace;letter-spacing:3px}
-@media print{button,.no-print{display:none}}
+*{box-sizing:border-box}body{font-family:Arial;margin:0;background:#f2f2f2}
+.top{background:#222;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;font-size:14px}
+.top b{font-size:17px}.wrap{display:flex;gap:12px;padding:12px}
+.left{flex:1.4}.right{flex:1;background:#fff;border-radius:14px;padding:14px;height:fit-content;position:sticky;top:10px}
+h3{margin:6px 0}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.tile{border:none;border-radius:14px;padding:16px 8px;color:#fff;font-size:16px;font-weight:bold}
+.tile small{display:block;font-weight:normal;margin-top:4px}
+.scan{background:#fff;border-radius:14px;padding:12px;margin-top:12px}
+.scan input{width:100%;padding:12px;font-size:16px;border:2px solid #222;border-radius:8px}
+.stock{background:#fff;border-radius:14px;padding:12px;margin-top:12px;font-size:14px}
+.sale{font-size:16px;line-height:1.9}.total{background:#111;color:#fff;border-radius:12px;padding:14px;font-size:24px;font-weight:bold;margin:10px 0}
+button{border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:bold;width:100%;margin-top:8px}
+.charge{background:#2E9E44;color:#fff}.hold{background:#ccc}
+.pay{text-align:center;color:#555;font-size:13px}
+@media(max-width:700px){.wrap{flex-direction:column}.grid{grid-template-columns:1fr 1fr 1fr}}
 </style></head>
 <body>
-<header class="no-print"><h1>TRADITIONAL STALL - POS DEMO</h1>
-<p>Shop name: EDIT LATER | Tap EDIT to change name / qty / price</p>
-<button onclick="window.print()">🖨️ PRINT BARCODE STICKERS</button>
-<button onclick="addItem()">+ ADD ITEM</button></header>
-<div id="list"></div>
+<div class="top"><div>🟢 <b>Traditional Stall POS — Mall Kiosk</b><br>Staff: Andile • Logged in • 14:32 • 09 Oct 2024</div>
+<div>Staff: Andile • Logged in<br>14:32 • 09 Oct 2024</div></div>
+<div class="wrap"><div class="left">
+<h3>CATEGORIES</h3><div class="grid" id="cats"></div>
+<div class="scan"><b>Barcode Scanning</b><br><br>
+<button style="background:#222;color:#fff;width:auto">[ Scan Barcode ]</button>
+<input id="bar" placeholder="Scan item... | Ready to scan  📷" onkeydown="if(event.key==='Enter')scanBar()"></div>
+<div class="stock"><b>Stock</b><br><span id="stock"></span></div>
+</div>
+<div class="right"><h3>CURRENT SALE &nbsp; —</h3><div class="sale" id="sale">No items yet.<br>Tap a category 👆</div>
+<hr>Subtotal: <b style="float:right" id="sub">R0.00</b><br>
+Discount: <b style="float:right">-R0.00</b><br>VAT (15%): <b style="float:right" id="vat">R0.00</b>
+<div class="total">TOTAL:<br><span id="tot">R0.00 ZAR</span></div>
+<button class="charge" onclick="alert('CHARGE - Card / Cash / Tap')">Charge &nbsp; F12</button>
+<button class="hold" onclick="alert('Sale HELD')">Hold Sale</button>
+<p class="pay">Payment: Card / Cash / Mobile Tap</p>
+<button style="background:#FFC107" onclick="clearSale()">Clear Sale</button>
+</div></div>
 <script>
 let items=[
-["001","Bangles","JEWELLERY",12],["002","Earrings","JEWELLERY",20],
-["003","Necklace","JEWELLERY",15],["004","Rings","JEWELLERY",18],
-["005","Beads","JEWELLERY",25],["006","Watches","WATCH / GLASSES",8],
-["007","Sunglasses","WATCH / GLASSES",10],["008","Glasses","WATCH / GLASSES",10],
-["009","Cloth Red","SANGOMA",6],["010","Cloth White","SANGOMA",6],
-["011","Cloth Black","SANGOMA",6],["012","Sangoma Beads","SANGOMA",14],
-["013","Muti Small Bottle","SANGOMA",9],["014","Muti Bottle","SANGOMA",7],
-["015","Muti Powder","SANGOMA",11],["016","Thread","SEWING",30],
-["017","Needle","SEWING",30],["018","Malapi","SEWING",20],
-["019","Clothes","CLOTHES / SHOES",12],["020","Shoes","CLOTHES / SHOES",9],
-["021","Traditional Dress","CLOTHES / SHOES",5],["022","Hubbly Pipe","HUBBLY",4],
-["023","Flavour Apple","HUBBLY",15],["024","Flavour Grape","HUBBLY",15],
-["025","Flavour Mint","HUBBLY",15],["026","Hubbly Coal","HUBBLY",20],
-["027","Bag","OTHER",8],["028","Hat","OTHER",7],
-["029","Belt","OTHER",9],["030","Perfume","OTHER",6]];
-let cats=[...new Set(items.map(i=>i[2]))];
-function show(){
-let h="";cats.forEach(c=>{
-h+=`<div class="cat">${c}</div>`;
-items.filter(i=>i[2]==c).forEach(i=>{
-h+=`<div class="item"><div><b>${i[0]} ${i[1]}</b><br><span class="barcode">||||| ${i[0]} |||||</span></div>
-<div>Qty: <b>${i[3]}</b> <button onclick="sell('${i[0]}')">SELL</button>
-<button onclick="editItem('${i[0]}')">EDIT</button></div></div>`})});
-document.getElementById("list").innerHTML=h}
-function sell(code){let it=items.find(i=>i[0]==code);if(it[3]>0)it[3]--;show()}
-function editItem(code){let it=items.find(i=>i[0]==code);
-let n=prompt("Name:",it[1]);if(n)it[1]=n;
-let q=prompt("Qty:",it[3]);if(q!==null)it[3]=Number(q);show()}
-function addItem(){let n=prompt("New item name:");if(n)items.push([String(items.length+1).padStart(3,"0"),n,"OTHER",0]);show()}
-show();
+["001","Bangles",25,42,"#E8912D","🧿"],["002","Earrings",35,20,"#E8912D","💍"],
+["003","Necklace",80,15,"#E8912D","📿"],["006","Watches",180,8,"#2F5D7C","⌚"],
+["007","Sunglasses",120,28,"#2F5D7C","🕶️"],["008","Glasses",150,10,"#2F5D7C","👓"],
+["019","Clothes",150,12,"#2E86D1","👕"],["021","Trad Dress",220,5,"#2E86D1","👗"],
+["020","Shoes",350,9,"#2E9E44","👟"],["009","Sangoma Cloth",220,15,"#C85A2A","🧿"],
+["012","Sangoma Beads",60,14,"#C85A2A","📿"],["022","Hubbly Pipe",280,4,"#7A4FA3","💨"],
+["023","Flavour Apple",45,15,"#7A4FA3","🍎"],["016","Thread",20,30,"#888","🧵"],
+["027","Bag",120,8,"#555","👜"],["030","Perfume",95,6,"#555","🌸"]];
+let sale=[];
+function showCats(){document.getElementById("cats").innerHTML=items.map(i=>
+`<button class="tile" style="background:${i[4]}" onclick="add('${i[0]}')">${i[5]}<br>${i[1]}<small>from R${i[2]}</small></button>`).join("");
+document.getElementById("stock").innerHTML=items.slice(0,3).map(i=>`${i[1]} &nbsp; ${i[3]} in stock ${i[3]<11?'• <span style="color:red">Low stock / Restock soon</span>':''}`).join("<br>")}
+function add(c){let it=items.find(i=>i[0]==c);let s=sale.find(i=>i[0]==c);
+if(s)s.qty++;else sale.push({code:c,name:it[1],price:it[2],qty:1});render()}
+function scanBar(){let v=document.getElementById("bar").value.trim();if(items.find(i=>i[0]==v))add(v);else alert("Not found: "+v);document.getElementById("bar").value=""}
+function render(){let sub=0;let h=sale.map(s=>{sub+=s.price*s.qty;
+return `• ${s.name} x${s.qty} <b style="float:right">R${(s.price*s.qty).toFixed(2)}</b>`}).join("<br>");
+document.getElementById("sale").innerHTML=sale.length?h:"No items yet.";
+let vat=sub*0.15;document.getElementById("sub").textContent="R"+sub.toFixed(2);
+document.getElementById("vat").textContent="R"+vat.toFixed(2);
+document.getElementById("tot").textContent="R"+(sub+vat).toFixed(2)+" ZAR"}
+function clearSale(){sale=[];render()}
+showCats();render();
 </script></body></html>
