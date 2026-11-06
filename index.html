@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Traditional Stall POS - Mall Kiosk</title>
+<title>Traditional Stall</title>
 <style>
 *{box-sizing:border-box}body{font-family:Arial;margin:0;background:#f2f2f2}
-.top{background:#222;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;font-size:14px}
-.top b{font-size:17px}
+#login{position:fixed;inset:0;background:linear-gradient(160deg,#111,#3a2a00);color:#fff;display:flex;align-items:center;justify-content:center;z-index:99}
+.box{text-align:center;width:320px}
+.logo{width:90px;height:90px;border:2px solid #d4af37;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:42px}
+.box h1{letter-spacing:5px;font-size:26px;margin:14px 0 2px}
+.box p{color:#d4af37;letter-spacing:2px;font-size:12px;margin:0 0 20px}
+.dots{font-size:32px;letter-spacing:12px;height:40px}
+.msg{color:#ff8a80;height:20px;font-size:14px}
+.pad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.pad button{background:#222;color:#fff;border:1px solid #555;border-radius:50%;width:78px;height:78px;font-size:24px;margin:0 auto}
+.pad button:active{background:#d4af37;color:#000}
+.top{background:#111;color:#fff;padding:14px;text-align:center;border-bottom:3px solid #d4af37}
+.top h1{margin:0;letter-spacing:6px;font-size:22px}
+.top h1 span{color:#d4af37}
+.top small{color:#ccc;letter-spacing:2px}
 .cats{background:#fff;padding:10px;display:flex;gap:8px;overflow-x:auto;position:sticky;top:0;z-index:9}
 .cat{white-space:nowrap;border:2px solid #222;border-radius:30px;padding:11px 16px;font-weight:bold;background:#fff;width:auto;margin:0}
 .cat.on{background:#222;color:#fff}
@@ -21,17 +33,30 @@ button{border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:bo
 @media(max-width:700px){.wrap{flex-direction:column}.right{position:static}}
 </style></head>
 <body>
-<div class="top"><div>🟢 <b>Traditional Stall POS — Mall Kiosk</b><br>Staff: Andile • 14:32 • 09 Oct 2024</div><div>Staff: Andile<br>Logged in</div></div>
+<div id="login"><div class="box">
+<div class="logo">✦</div>
+<h1>TRADITIONAL <span style="color:#d4af37">STALL</span></h1>
+<p>JEWELLERY • SANGOMA • FASHION</p>
+<div class="dots" id="dots">○ ○ ○ ○</div>
+<div class="msg" id="msg"></div>
+<p style="color:#ccc;font-size:14px;letter-spacing:1px">Enter your password</p>
+<div class="pad">
+<button onclick="press(1)">1</button><button onclick="press(2)">2</button><button onclick="press(3)">3</button>
+<button onclick="press(4)">4</button><button onclick="press(5)">5</button><button onclick="press(6)">6</button>
+<button onclick="press(7)">7</button><button onclick="press(8)">8</button><button onclick="press(9)">9</button>
+<button onclick="clr()">C</button><button onclick="press(0)">0</button><button onclick="del()">⌫</button>
+</div>
+<p style="color:#888;font-size:12px;margin-top:16px">Testing password: 0000</p>
+</div></div>
 
+<div class="top"><h1>TRADITIONAL <span>STALL</span></h1><small>PREMIUM &nbsp;•&nbsp; STAFF: ANDILE &nbsp;•&nbsp; 14:32</small></div>
 <div class="cats" id="cats"></div>
-
 <div class="wrap"><div class="left">
 <h3 id="title">⭐ MOST SELLING ITEMS</h3>
 <div class="grid" id="grid"></div>
 <div style="background:#fff;border-radius:14px;padding:12px;margin-top:12px"><b>Barcode Scanning</b>
 <input id="bar" placeholder="Scan item... | Ready to scan 📷" onkeydown="if(event.key==='Enter')scanBar()"></div>
 </div>
-
 <div class="right"><h3>CURRENT SALE — RECEIPT 🧾</h3><div class="sale" id="sale">No items yet.<br>Tap category on TOP 👆 then tap item 👆</div>
 <hr>Subtotal: <b style="float:right" id="sub">R0.00</b><br>Discount: <b style="float:right">-R0.00</b><br>VAT (15%): <b style="float:right" id="vat">R0.00</b>
 <div class="total">TOTAL:<br><span id="tot">R0.00 ZAR</span></div>
@@ -42,6 +67,14 @@ button{border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:bo
 </div></div>
 
 <script>
+let pin="";
+function press(n){if(pin.length>=4)return;pin+=n;draw();
+if(pin.length==4){if(pin=="0000"){document.getElementById("login").style.display="none"}
+else{document.getElementById("msg").textContent="Wrong password. Try again.";pin="";setTimeout(draw,300)}}}
+function draw(){let d="";for(let i=0;i<4;i++)d+=i<pin.length?"● ":"○ ";document.getElementById("dots").textContent=d}
+function clr(){pin="";document.getElementById("msg").textContent="";draw()}
+function del(){pin=pin.slice(0,-1);draw()}
+
 let cats=["⭐ Most Selling","Clothes","Bangles","Watches","Traditional Shirts","Traditional Outfits","Traditional Tools","Sewing","Hubbly"];
 let items=[
 ["001","Bangles",25,42,"Bangles","#E8912D","🧿",1],["002","Earrings",35,20,"Bangles","#E8912D","💍",1],
